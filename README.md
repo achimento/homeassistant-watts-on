@@ -1,5 +1,26 @@
-# homeassistant-watts-on
-Integration to pull personal water and heating usage data from Watts On.
+# Watts On - Water & Heating Integration
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
+The `watts-on` component is a Home Assistant custom component for monitoring your personal water and heating usage from the Watts On app.
+
+---
+# Installation
+---
+
+### Manual Installation
+  1. Coming soon
+
+### Installation with HACS (Home Assistant Community Store)
+  1. Coming soon
+
+
+## Configuration & Requirements
+Coming Soon
+
+
+---
+# Notice on integration status
+---
 
 ## Purpose
 The Purpose of this Home Assistant integration is to allow people to see their personal water and heating usage without having to rely on hardware.\
