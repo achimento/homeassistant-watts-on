@@ -2,12 +2,11 @@
 Integration to pull personal water and heating usage data from Watts On.
 
 ## Purpose
-The Purpose of this Home Assistant integration is to allow people to see their personal water and heating usage without having to rely on hardware.
-This will not work for everyone as it relies on Watts On having an integration to your water/heating provider.
-The concept here is that people should be able to easily and automatically pull their water and heating data as easily as possible.
-Generally I do not like that ones personal data is not readily available. Ideally there would be a service at some point similar to eloverblik.dk.
-First thought was using deveoper.watts.dk, but the API is severely lacking.
-The inspiration for this project is from a specific issue from another project with a similar purpose: [homeassistant-novafos ISSUE](https://github.com/kpoppel/homeassistant-novafos/issues/10)
+The Purpose of this Home Assistant integration is to allow people to see their personal water and heating usage without having to rely on hardware.\
+This will not work for everyone as it relies on Watts On having an integration to your water/heating provider.\
+The concept here is that people should be able to easily and automatically pull their water and heating data as easily as possible.\
+Generally I do not like that ones personal data is not readily available. Ideally there would be a service at some point similar to eloverblik.dk. First thought was using deveoper.watts.dk, but the API is severely lacking.\
+The inspiration for this project is from a specific issue from another project with a similar purpose: [homeassistant-novafos ISSUE](https://github.com/kpoppel/homeassistant-novafos/issues/10)\\
 **Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API using a proxy, as I had no other options of getting the data.
 
 ## Requirements
