@@ -28,7 +28,7 @@ This will not work for everyone as it relies on Watts On having an integration t
 The concept here is that people should be able to automatically pull their water and heating data as easily as possible.\
 Generally I do not like that ones personal data is not readily available. Ideally there would be a service at some point similar to eloverblik.dk. First thought was using developer.watts.dk, but the API is severely lacking.\
 The inspiration for this project is from a specific issue from another project with a similar purpose: [homeassistant-novafos ISSUE](https://github.com/kpoppel/homeassistant-novafos/issues/10)\
-**Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API using a proxy, as I had no other options of getting the data.
+**Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API using a proxy, as I had no other options of getting the data in an automated manner.
 
 ### Requirements
 - Have a user on the Watts On app created with username/password.
