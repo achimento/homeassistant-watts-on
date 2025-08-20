@@ -3,9 +3,9 @@
 
 The `watts-on` component is a Home Assistant custom component for monitoring your personal water and heating usage from the Watts On app.
 
----
+
 # Installation
----
+
 
 ### Manual Installation
   1. Coming soon
@@ -14,13 +14,13 @@ The `watts-on` component is a Home Assistant custom component for monitoring you
   1. Coming soon
 
 
-## Configuration & Requirements
+### Configuration & Requirements
 Coming Soon
 
 
----
+
 # Notice on integration status
----
+
 
 ## Purpose
 The Purpose of this Home Assistant integration is to allow people to see their personal water and heating usage without having to rely on hardware.\
