@@ -1,0 +1,17 @@
+{
+  "domain": "watts-on",
+  "name": "Watts On",
+  "codeowners": [
+    "@achimento"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/achimento/homeassistant-watts-on",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/achimento/homeassistant-watts-on/issues",
+  "requirements": [],
+  "ssdp": [],
+  "version": "0.1.0",
+  "zeroconf": []
+}
