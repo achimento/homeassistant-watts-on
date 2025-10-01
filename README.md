@@ -8,14 +8,26 @@ The `watts-on` component is a Home Assistant custom component for monitoring you
 
 
 ### Manual Installation
-  1. Coming soon
+  1. Copy watts-on folder into your custom_components folder in your hass configuration directory.
+  2. Restart Home Assistant.
+  3. Configure the integration.
+
 
 ### Installation with HACS (Home Assistant Community Store)
-  1. Coming soon
+Eventually this will become an official HACS integration, for now use the custom repo method.
+  1. Open HACS and click the 3 dots in upper right corner.
+  2. Type in https://github.com/achimento/homeassistant-watts-on as the name, and choose integration as the type.
+  3. Restart Home Assistant.
+  4. Add the Integration and configure.
 
 
 ### Configuration & Requirements
-Coming Soon
+- Have a user on the Watts On app created with username/password.
+- Connect Watts On to your heating and water provider using the app.
+- Collect device_ids for the heating and water device set up in Watts On.
+
+For now, you need to note down the heating and water metering id and add those during configuration of the integration.
+Eventually, I'd like to automatically fetch the meters, but that requires additional reverse engineering of the watts on api.
 
 
 
@@ -30,13 +42,14 @@ Generally I do not like that ones personal data is not readily available. Ideall
 The inspiration for this project is from a specific issue from another project with a similar purpose: [homeassistant-novafos ISSUE](https://github.com/kpoppel/homeassistant-novafos/issues/10)\
 **Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API using a proxy, as I had no other options of getting the data in an automated manner.
 
-### Requirements
-- Have a user on the Watts On app created with username/password.
-- Connect Watts On to your heating and water provider using the app.
-- Collect device_ids for the heating and water device set up in Watts On.
-- Maybe check out client_id to add as configuration option? - TBD
-
 ### Current progress
 - Azure AD PKCE Auth flow (Used in Watts On) has been automated in a private github Repo. Works with both access and refresh tokens.
 - Water and Heating data pulling has been set up and functions as expected in a private github repo
-- NEXT UP: Clean up the functions and change the structure to work with Home Assistant/HACS, slowly adding code to this repository.
+- Cleaned up the functions and changed the structure to work with Home Assistant/HACS, slowly adding code to this repository.
+- COMING "SOON": Automatic fetch of meter ids, both heating and water
+- COMING "SOON": Add HASS Statistics sensor to allow easy graph display of usage data.
+- COMING "SOON": Add Migration based logic for version updates of the integration
+- COMING "SOON": Add sample images and example usage in the readme
+- COMING "SOON": Add tests for robustness
+- COMING "SOON": Add Validation during config flow set up.
+- Maybe more?
