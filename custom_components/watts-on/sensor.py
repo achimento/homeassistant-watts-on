@@ -43,7 +43,8 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_name = description.name
-        self._attr_unique_id = f"{description.sensor_type}_{description.key}"
+        entry_id = coordinator.config_entry.entry_id
+        self._attr_unique_id = f"{entry_id}_{description.sensor_type}_{description.key}"
         self._attr_entity_id = f"sensor.watts_on_{description.sensor_type}_{description.key}"
 
     @property
