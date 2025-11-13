@@ -40,7 +40,6 @@ async def async_setup_entry(
 
     async_add_entities(sensors, True)
 
-
 class WattsOnSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Watts On sensor."""
     entity_description: WattsOnSensorDescription
@@ -55,54 +54,33 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def native_value(self):
-        """Return the current sensor value from the coordinator data."""
+        """Return the current sensor value from the coordinator data (last value of list)."""
         data = self.coordinator.data
         if not data:
-            return None
+            return 0.0
 
         section = data.get(self.entity_description.sensor_type, {})
-        key = self.entity_description.key
+        series = section.get(self.entity_description.key, [])
 
-        # For statistics sensors with a series, return last value
-        if key == "statistics":
-            series = section.get("statistics")
-            if series and isinstance(series, list) and len(series) > 0:
-                return series[-1]["value"]
-            return 0.0
-
-        # For other summary statistics (day/week/month/year), ensure numeric
-        val = section.get(key)
-        if isinstance(val, list):
-            # Sometimes your code returns a list, take last value if exists
-            if len(val) > 0 and isinstance(val[-1], dict):
-                return val[-1].get("value", 0.0)
-            return 0.0
-        if val is None:
-            return 0.0
-        return float(val)
-
+        if isinstance(series, list) and series:
+            # Expect each entry to be a dict with 'value'
+            last = series[-1]
+            return float(last.get("value", 0.0))
+        return 0.0
 
     @property
     def extra_state_attributes(self):
-        """Return extra attributes for statistics sensors."""
+        """Return the full list for this sensor as attributes."""
         data = self.coordinator.data
         if not data:
             return None
 
         section = data.get(self.entity_description.sensor_type, {})
+        series = section.get(self.entity_description.key, [])
 
-        # Only attach full series to the main statistics sensor
-        if self.entity_description.key == "statistics":
-            series = section.get("statistics")
-            if series:
-                self._attrs["statistics"] = series
-
-        # Always attach day/week/month/year values if available
-        for key in ("statistics_day", "statistics_week", "statistics_month", "statistics_year"):
-            if key in section:
-                self._attrs[key] = section[key]
-
-        return self._attrs
+        if isinstance(series, list) and series:
+            return {self.entity_description.key: series}
+        return None
 
     @property
     def device_class(self):
