@@ -215,7 +215,7 @@ class WattsOnApi:
 
         Args:
             data: Raw list of readings from API.
-            interval: Aggregation period: 'hourly', 'daily', 'weekly', 'monthly', 'raw'.
+            interval: Aggregation period: 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'raw'.
 
         Returns:
             A list of dictionaries: [{"datetime": ISO8601, "value": float}, ...]
@@ -247,6 +247,8 @@ class WattsOnApi:
                 key = key.replace(hour=0, minute=0, second=0, microsecond=0)
             elif interval == "monthly":
                 key = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            elif interval == "yearly":
+                key = dt.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
             else:
                 key = dt
 
@@ -316,11 +318,17 @@ class WattsOnApi:
 
         return {
             "water": {
-                **self.extract_summations(water_data),
-                "statistics": self.build_timeseries(water_data, "daily"),
+                "statistics_raw": self.build_timeseries(water_data, "raw"),
+                "statistics_day": self.build_timeseries(water_data, "daily"),
+                "statistics_week": self.build_timeseries(water_data, "weekly"),
+                "statistics_month": self.build_timeseries(water_data, "monthly"),
+                "statistics_year": self.build_timeseries(water_data, "yearly"),
             },
             "heating": {
-                **self.extract_summations(heating_data),
-                "statistics": self.build_timeseries(heating_data, "daily"),
+                "statistics_raw": self.build_timeseries(heating_data, "raw"),
+                "statistics_day": self.build_timeseries(heating_data, "daily"),
+                "statistics_week": self.build_timeseries(heating_data, "weekly"),
+                "statistics_month": self.build_timeseries(heating_data, "monthly"),
+                "statistics_year": self.build_timeseries(heating_data, "yearly"),
             },
         }

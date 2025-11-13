@@ -1,51 +1,59 @@
 """Sensor platform for Watts On integration."""
 
 from __future__ import annotations
+from typing import Any
 import logging
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_NAME
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, WATER_SENSOR_TYPES, HEATING_SENSOR_TYPES
+from .const import DOMAIN, WATER_SENSOR_TYPES, EXTRA_WATER_SENSOR_TYPES, HEATING_SENSOR_TYPES, EXTRA_HEATING_SENSOR_TYPES
+from .model import WattsOnSensorDescription
 from .coordinator import WattsOnUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    config: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Watts On sensors based on a config entry."""
 
-    coordinator: WattsOnUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    name: str = config.data[CONF_NAME]
+    coordinator: WattsOnUpdateCoordinator = hass.data[DOMAIN][config.entry_id]["coordinator"]
 
     sensors = []
 
+    # Combine base and extra sensors - EXTRA is in case we want to have a flag for grouped sensors
+    all_water_sensors = WATER_SENSOR_TYPES + EXTRA_WATER_SENSOR_TYPES
+    all_heating_sensors = HEATING_SENSOR_TYPES + EXTRA_HEATING_SENSOR_TYPES
+
     # Add water sensors
-    for description in WATER_SENSOR_TYPES:
-        sensors.append(WattsOnSensor(coordinator, description))
+    for description in all_water_sensors:
+        sensors.append(WattsOnSensor(name, coordinator, description))
 
     # Add heating sensors
-    for description in HEATING_SENSOR_TYPES:
-        sensors.append(WattsOnSensor(coordinator, description))
+    for description in all_heating_sensors:
+        sensors.append(WattsOnSensor(name, coordinator, description))
 
     async_add_entities(sensors, True)
 
 
 class WattsOnSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Watts On sensor."""
+    entity_description: WattsOnSensorDescription
 
     def __init__(self, name: str, coordinator: WattsOnUpdateCoordinator, description):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self.entity_description = description
+        self._attrs: dict[str, Any] = {}
         self._attr_name = f"{name} {description.name}"
-        self._attr_unique_id = (
-            f"{name.lower()}-{description.sensor_type}-{description.key}"
-        )
+        self._attr_unique_id = f"{name.lower()}-{description.sensor_type}-{description.key}"
 
     @property
     def native_value(self):
@@ -55,15 +63,17 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
             return None
         section = data.get(self.entity_description.sensor_type, {})
 
-        # For 'statistics' sensor, choose a representative numeric value
-        if self.entity_description.key == "statistics":
+        key = self.entity_description.key
+
+        # If this is the main statistics sensor, return the last value from time series
+        if key == "statistics":
             series = section.get("statistics")
-            if series and isinstance(series, list):
-                return series[-1]["value"] if series else 0.0
+            if series and isinstance(series, list) and len(series) > 0:
+                return series[-1]["value"]
             return 0.0
 
-        # For other sensors, use the extracted summary number directly
-        return section.get(self.entity_description.key)
+        # Otherwise, return the numeric summary for day/week/month/year
+        return section.get(key, 0.0)
 
     @property
     def extra_state_attributes(self):
@@ -73,20 +83,19 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
             return None
 
         section = data.get(self.entity_description.sensor_type, {})
-        attrs = {}
 
-        # Only attach the detailed series on the "statistics" sensor
+        # Only attach full series to the main statistics sensor
         if self.entity_description.key == "statistics":
             series = section.get("statistics")
             if series:
-                attrs["statistics"] = series
+                self._attrs["statistics"] = series
 
-        # Always include the other summary statistics as attributes for convenience
-        for key in ("yesterday", "week", "month", "year"):
+        # Always attach day/week/month/year values if available
+        for key in ("statistics_day", "statistics_week", "statistics_month", "statistics_year"):
             if key in section:
-                attrs[key] = section[key]
+                self._attrs[key] = section[key]
 
-        return attrs or None
+        return self._attrs
 
     @property
     def device_class(self):

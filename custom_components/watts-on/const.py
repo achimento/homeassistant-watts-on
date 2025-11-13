@@ -9,33 +9,130 @@ from .model import WattsOnSensorDescription
 DOMAIN = "watts-on"
 DEFAULT_NAME = "Watts On"
 
-# Helper to create repeating sensor types
-def _create_statistics_sensors(sensor_type: str, unit, icon: str) -> tuple[WattsOnSensorDescription, ...]:
-    """Create daily, weekly, monthly, yearly and statistics sensors."""
-    keys = ["statistics", "yesterday", "week", "month", "year"]
-    names = ["Statistics", "Yesterday", "Week", "Month", "Year"]
-
-    return tuple(
-        WattsOnSensorDescription(
-            sensor_type=sensor_type,
-            key=key,
-            name=f"{sensor_type.capitalize()} {name}" if key != "statistics" else f"{sensor_type.capitalize()} Statistics",
-            entity_registry_enabled_default=True,
-            native_unit_of_measurement=unit,
-            suggested_display_precision=3,
-            device_class=SensorDeviceClass.WATER if sensor_type == "water" else SensorDeviceClass.ENERGY,
-            icon=icon,
-            state_class=SensorStateClass.MEASUREMENT,
-        )
-        for key, name in zip(keys, names)
-    )
-
+# -----------------------------
 # Water sensors
-WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = _create_statistics_sensors(
-    "water", UnitOfVolume.CUBIC_METERS, "mdi:water"
+# -----------------------------
+WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
+    WattsOnSensorDescription(
+        sensor_type="water",
+        key="statistics",
+        name="Water statistics",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.WATER,
+        icon="mdi:water",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
 )
 
+EXTRA_WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
+    WattsOnSensorDescription(
+        sensor_type="water",
+        key="statistics_day",
+        name="Water statistics day",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.WATER,
+        icon="mdi:water",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="water",
+        key="statistics_week",
+        name="Water statistics week",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.WATER,
+        icon="mdi:water",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="water",
+        key="statistics_month",
+        name="Water statistics month",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.WATER,
+        icon="mdi:water",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="water",
+        key="statistics_year",
+        name="Water statistics year",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.WATER,
+        icon="mdi:water",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+)
+
+# -----------------------------
 # Heating sensors
-HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = _create_statistics_sensors(
-    "heating", UnitOfEnergy.MEGA_WATT_HOUR, "mdi:heat-wave"
+# -----------------------------
+HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
+    WattsOnSensorDescription(
+        sensor_type="heating",
+        key="statistics",
+        name="Heating statistics",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.ENERGY,
+        icon="mdi:heat-wave",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+)
+
+EXTRA_HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
+    WattsOnSensorDescription(
+        sensor_type="heating",
+        key="statistics_day",
+        name="Heating statistics day",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.ENERGY,
+        icon="mdi:heat-wave",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="heating",
+        key="statistics_week",
+        name="Heating statistics week",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.ENERGY,
+        icon="mdi:heat-wave",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="heating",
+        key="statistics_month",
+        name="Heating statistics month",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.ENERGY,
+        icon="mdi:heat-wave",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    WattsOnSensorDescription(
+        sensor_type="heating",
+        key="statistics_year",
+        name="Heating statistics year",
+        entity_registry_enabled_default=True,
+        native_unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+        suggested_display_precision=3,
+        device_class=SensorDeviceClass.ENERGY,
+        icon="mdi:heat-wave",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
 )
