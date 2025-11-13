@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, WATER_SENSOR_TYPES, EXTRA_WATER_SENSOR_TYPES, HEATING_SENSOR_TYPES, EXTRA_HEATING_SENSOR_TYPES
+from .const import DOMAIN, DEFAULT_NAME, WATER_SENSOR_TYPES, EXTRA_WATER_SENSOR_TYPES, HEATING_SENSOR_TYPES, EXTRA_HEATING_SENSOR_TYPES
 from .model import WattsOnSensorDescription
 from .coordinator import WattsOnUpdateCoordinator
 
@@ -32,11 +32,11 @@ async def async_setup_entry(
 
     # Add water sensors
     for description in all_water_sensors:
-        sensors.append(WattsOnSensor(DOMAIN, coordinator, description))
+        sensors.append(WattsOnSensor(DEFAULT_NAME, coordinator, description))
 
     # Add heating sensors
     for description in all_heating_sensors:
-        sensors.append(WattsOnSensor(DOMAIN, coordinator, description))
+        sensors.append(WattsOnSensor(DEFAULT_NAME, coordinator, description))
 
     async_add_entities(sensors, True)
 
@@ -59,15 +59,28 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
         data = self.coordinator.data
         if not data:
             return None
-        section = data.get(self.entity_description.sensor_type, {})
 
+        section = data.get(self.entity_description.sensor_type, {})
         key = self.entity_description.key
 
-        # If this is the main statistics sensor, return the last value from time series
-        series = section.get(key)
-        if series and isinstance(series, list) and len(series) > 0:
-            return series[-1]["value"]
-        return 0.0
+        # For statistics sensors with a series, return last value
+        if key == "statistics":
+            series = section.get("statistics")
+            if series and isinstance(series, list) and len(series) > 0:
+                return series[-1]["value"]
+            return 0.0
+
+        # For other summary statistics (day/week/month/year), ensure numeric
+        val = section.get(key)
+        if isinstance(val, list):
+            # Sometimes your code returns a list, take last value if exists
+            if len(val) > 0 and isinstance(val[-1], dict):
+                return val[-1].get("value", 0.0)
+            return 0.0
+        if val is None:
+            return 0.0
+        return float(val)
+
 
     @property
     def extra_state_attributes(self):
