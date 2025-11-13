@@ -6,7 +6,6 @@ import logging
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.const import CONF_NAME
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -23,7 +22,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up Watts On sensors based on a config entry."""
 
-    name: str = config.data[CONF_NAME]
     coordinator: WattsOnUpdateCoordinator = hass.data[DOMAIN][config.entry_id]["coordinator"]
 
     sensors = []
@@ -34,11 +32,11 @@ async def async_setup_entry(
 
     # Add water sensors
     for description in all_water_sensors:
-        sensors.append(WattsOnSensor(name, coordinator, description))
+        sensors.append(WattsOnSensor(DOMAIN, coordinator, description))
 
     # Add heating sensors
     for description in all_heating_sensors:
-        sensors.append(WattsOnSensor(name, coordinator, description))
+        sensors.append(WattsOnSensor(DOMAIN, coordinator, description))
 
     async_add_entities(sensors, True)
 
