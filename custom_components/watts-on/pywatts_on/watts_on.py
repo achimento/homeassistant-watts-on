@@ -160,55 +160,6 @@ class WattsOnApi:
 
         return tok.json()
     
-    def extract_summations(self, data):
-        now = datetime.now(timezone.utc)
-        day_start = datetime(now.year, now.month, now.day, tzinfo=timezone.utc)
-        yesterday_start = day_start - timedelta(days=1)
-        first_of_this_month = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
-        ytd_start = datetime(now.year, 1, 1, tzinfo=timezone.utc)
-        week_start = day_start - timedelta(days=now.weekday())
-
-        month_total = 0.0
-        yesterday_total = 0.0
-        week_total = 0.0
-        ytd_total = 0.0
-
-        for d in data:
-            try:
-                ts = d.get("sd") or d.get("SD")
-                val = d.get("vol") or d.get("En")
-                if ts is None or val is None:
-                    continue
-
-                if isinstance(ts, str):
-                    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-                else:
-                    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
-
-                if not val < 0:
-                    fval = float(val)
-
-                    if yesterday_start <= dt <= day_start:
-                        yesterday_total += fval
-
-                    if dt >= week_start:
-                        week_total += fval
-
-                    if dt >= first_of_this_month:
-                        month_total += fval
-
-                    if dt >= ytd_start:
-                        ytd_total += fval
-            except Exception:
-                continue
-
-        return {
-            "week": week_total,
-            "month": month_total,
-            "year": ytd_total,
-            "yesterday": yesterday_total,
-        }
-    
     def build_timeseries(self, data, interval: str = "daily"):
         """
         Build time-series statistics.
@@ -231,33 +182,34 @@ class WattsOnApi:
             if ts is None or val is None:
                 continue
 
-            try:
-                if isinstance(ts, str):
-                    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+            if not val < 0:
+                try:
+                    if isinstance(ts, str):
+                        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    else:
+                        dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+                    fval = float(val)
+                except Exception:
+                    continue
+
+                if dt >= today_utc_midnight:
+                    break
+
+                if interval == "hourly":
+                    key = dt.replace(minute=0, second=0, microsecond=0)
+                elif interval == "daily":
+                    key = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+                elif interval == "weekly":
+                    key = dt - timedelta(days=dt.weekday())
+                    key = key.replace(hour=0, minute=0, second=0, microsecond=0)
+                elif interval == "monthly":
+                    key = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                elif interval == "yearly":
+                    key = dt.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
                 else:
-                    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
-                fval = float(val)
-            except Exception:
-                continue
+                    key = dt
 
-            if dt >= today_utc_midnight:
-                break
-
-            if interval == "hourly":
-                key = dt.replace(minute=0, second=0, microsecond=0)
-            elif interval == "daily":
-                key = dt.replace(hour=0, minute=0, second=0, microsecond=0)
-            elif interval == "weekly":
-                key = dt - timedelta(days=dt.weekday())
-                key = key.replace(hour=0, minute=0, second=0, microsecond=0)
-            elif interval == "monthly":
-                key = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            elif interval == "yearly":
-                key = dt.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-            else:
-                key = dt
-
-            grouped[key] += fval
+                grouped[key] += fval
 
         stats = [
             {"datetime": k.isoformat(), "value": round(v, 3)}
