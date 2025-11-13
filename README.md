@@ -24,11 +24,6 @@ Eventually this will become an official HACS integration, for now use the custom
 ### Configuration & Requirements
 - Have a user on the Watts On app created with username/password.
 - Connect Watts On to your heating and water provider using the app.
-- Collect device_ids for the heating and water device set up in Watts On.
-
-For now, you need to note down the heating and water metering id and add those during configuration of the integration.
-Eventually, I'd like to automatically fetch the meters, but that requires additional reverse engineering of the watts on api.
-
 
 
 # Notice on integration status
@@ -40,14 +35,14 @@ This will not work for everyone as it relies on Watts On having an integration t
 The concept here is that people should be able to automatically pull their water and heating data as easily as possible.\
 Generally I do not like that ones personal data is not readily available. Ideally there would be a service at some point similar to eloverblik.dk. First thought was using developer.watts.dk, but the API is severely lacking.\
 The inspiration for this project is from a specific issue from another project with a similar purpose: [homeassistant-novafos ISSUE](https://github.com/kpoppel/homeassistant-novafos/issues/10)\
-**Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API using a proxy, as I had no other options of getting the data in an automated manner.
+**Disclaimer:** I have tried talking to both Watts, utility comanies, etc. about access to an official api, but to no avail. As such I have ended up with a solution of reverse engineering the API for the Watts On app using a https proxy, as I had no other options of getting the data in an automated manner.
 
 ### Current progress
 - Azure AD PKCE Auth flow (Used in Watts On) has been automated in a private github Repo. Works with both access and refresh tokens.
 - Water and Heating data pulling has been set up and functions as expected in a private github repo
 - Cleaned up the functions and changed the structure to work with Home Assistant/HACS, slowly adding code to this repository.
-- COMING "SOON": Automatic fetch of meter ids, both heating and water
-- COMING "SOON": Add HASS Statistics sensor to allow easy graph display of usage data.
+- Automatic fetch of meter ids, both heating and water
+- Add HASS Statistics sensor to allow easy graph display of usage data.
 - COMING "SOON": Add Migration based logic for version updates of the integration
 - COMING "SOON": Add sample images and example usage in the readme
 - COMING "SOON": Add tests for robustness
