@@ -53,8 +53,42 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
         data = self.coordinator.data
         if not data:
             return None
-        # Access the statistics data based on sensor type and key
-        return data.get(self.entity_description.sensor_type, {}).get(self.entity_description.key)
+        section = data.get(self.entity_description.sensor_type, {})
+
+        # For 'statistics' sensor, choose a representative numeric value
+        if self.entity_description.key == "statistics":
+            # Could be today's total or the most recent point in the series
+            series = section.get("statistics_series")
+            if series and isinstance(series, list):
+                return series[-1]["value"] if series else 0.0
+            return 0.0
+
+        # For other sensors, use the extracted summary number directly
+        return section.get(f"statistics_{self.entity_description.key}")
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra attributes for statistics sensors."""
+        data = self.coordinator.data
+        if not data:
+            return None
+
+        sensor_type = self.entity_description.sensor_type
+        section = data.get(sensor_type, {})
+        attrs = {}
+
+        # Only attach the detailed series on the "statistics" sensor
+        if self.entity_description.key == "statistics":
+            series = section.get("statistics_series")
+            if series:
+                attrs["statistics_series"] = series
+
+        # Always include the other summary statistics as attributes for convenience
+        for key in ("statistics_yesterday", "statistics_week", "statistics_month", "statistics_year"):
+            if key in section:
+                attrs[key] = section[key]
+
+        return attrs or None
 
     @property
     def device_class(self):
