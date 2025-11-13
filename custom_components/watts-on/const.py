@@ -22,7 +22,7 @@ WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.WATER,
         icon="mdi:water",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )
 
@@ -36,7 +36,7 @@ EXTRA_WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.WATER,
         icon="mdi:water",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="water",
@@ -47,7 +47,7 @@ EXTRA_WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.WATER,
         icon="mdi:water",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="water",
@@ -58,7 +58,7 @@ EXTRA_WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.WATER,
         icon="mdi:water",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="water",
@@ -69,7 +69,7 @@ EXTRA_WATER_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.WATER,
         icon="mdi:water",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )
 
@@ -86,7 +86,7 @@ HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.ENERGY,
         icon="mdi:heat-wave",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )
 
@@ -100,7 +100,7 @@ EXTRA_HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.ENERGY,
         icon="mdi:heat-wave",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="heating",
@@ -111,7 +111,7 @@ EXTRA_HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.ENERGY,
         icon="mdi:heat-wave",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="heating",
@@ -122,7 +122,7 @@ EXTRA_HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.ENERGY,
         icon="mdi:heat-wave",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     WattsOnSensorDescription(
         sensor_type="heating",
@@ -133,6 +133,6 @@ EXTRA_HEATING_SENSOR_TYPES: Final[tuple[WattsOnSensorDescription, ...]] = (
         suggested_display_precision=3,
         device_class=SensorDeviceClass.ENERGY,
         icon="mdi:heat-wave",
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=SensorStateClass.TOTAL_INCREASING,
     ),
 )

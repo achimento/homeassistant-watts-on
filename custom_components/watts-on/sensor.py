@@ -79,7 +79,7 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
         series = section.get(self.entity_description.key, [])
 
         if isinstance(series, list) and series:
-            return {self.entity_description.key: series}
+            return {"data": series}
         return None
 
     @property

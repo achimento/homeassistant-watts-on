@@ -283,27 +283,37 @@ class WattsOnApi:
 
     def fetch_water(self, token: str):
         """Fetch water data from API."""
-        return self.session.get(
-            f"https://p.watts-energy.dk/water/api/data/{self.water_device_id}",
-            headers={"Authorization": f"Bearer {token}"},
-            params={
-                "startDate": "1900-01-01 00:00:00 +0000",
-                "endDate": "2100-01-01 00:00:00 +0000",
-            },
-            timeout=30,
-        ).json()
+        if not self.water_device_id:
+            self.fetch_devices()
+        if self.water_device_id and self.water_device_id != "":
+            return self.session.get(
+                f"https://p.watts-energy.dk/water/api/data/{self.water_device_id}",
+                headers={"Authorization": f"Bearer {token}"},
+                params={
+                    "startDate": "1900-01-01 00:00:00 +0000",
+                    "endDate": "2100-01-01 00:00:00 +0000",
+                },
+                timeout=30,
+            ).json()
+        else:
+            return {}
 
     def fetch_heating(self, token: str):
         """Fetch heating data from API."""
-        return self.session.get(
-            f"https://p.watts-energy.dk/heating/api/v1/devices/{self.heating_device_id}/data",
-            headers={"Authorization": f"Bearer {token}"},
-            params={
-                "fromDate": "1900-01-01 00:00:00 +0000",
-                "toDate": "2100-01-01 00:00:00 +0000",
-            },
-            timeout=30,
-        ).json()
+        if not self.heating_device_id:
+            self.fetch_devices()
+        if self.heating_device_id and self.heating_device_id != "":
+            return self.session.get(
+                f"https://p.watts-energy.dk/heating/api/v1/devices/{self.heating_device_id}/data",
+                headers={"Authorization": f"Bearer {token}"},
+                params={
+                    "fromDate": "1900-01-01 00:00:00 +0000",
+                    "toDate": "2100-01-01 00:00:00 +0000",
+                },
+                timeout=30,
+            ).json()
+        else:
+            return {}
     
     def fetch_data(self) -> dict:
         """
