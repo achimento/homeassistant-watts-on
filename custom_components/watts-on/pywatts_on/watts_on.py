@@ -222,6 +222,8 @@ class WattsOnApi:
         """
         # Prepare accumulator
         grouped = defaultdict(float)
+        today_utc_date = datetime.now(timezone.utc).date()
+        today_utc_midnight = datetime.combine(today_utc_date, datetime.min.time(), tzinfo=timezone.utc)
 
         for d in data:
             ts = d.get("sd") or d.get("SD")
@@ -237,6 +239,9 @@ class WattsOnApi:
                 fval = float(val)
             except Exception:
                 continue
+
+            if dt >= today_utc_midnight:
+                break
 
             if interval == "hourly":
                 key = dt.replace(minute=0, second=0, microsecond=0)
