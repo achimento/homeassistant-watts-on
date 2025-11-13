@@ -64,14 +64,10 @@ class WattsOnSensor(CoordinatorEntity, SensorEntity):
         key = self.entity_description.key
 
         # If this is the main statistics sensor, return the last value from time series
-        if key == "statistics":
-            series = section.get("statistics")
-            if series and isinstance(series, list) and len(series) > 0:
-                return series[-1]["value"]
-            return 0.0
-
-        # Otherwise, return the numeric summary for day/week/month/year
-        return section.get(key, 0.0)
+        series = section.get(key)
+        if series and isinstance(series, list) and len(series) > 0:
+            return series[-1]["value"]
+        return 0.0
 
     @property
     def extra_state_attributes(self):
