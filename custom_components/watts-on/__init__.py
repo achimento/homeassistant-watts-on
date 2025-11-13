@@ -25,8 +25,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     api = WattsOnApi(
         username=entry.data["username"],
         password=entry.data["password"],
-        water_device_id=entry.data.get("water_device_id"),
-        heating_device_id=entry.data.get("heating_device_id"),
         tokens=tokens,
     )
 

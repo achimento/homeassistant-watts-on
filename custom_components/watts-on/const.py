@@ -11,9 +11,9 @@ DEFAULT_NAME = "Watts On"
 
 # Helper to create repeating sensor types
 def _create_statistics_sensors(sensor_type: str, unit, icon: str) -> tuple[WattsOnSensorDescription, ...]:
-    """Create daily, weekly, monthly, yearly statistics sensors."""
-    keys = ["statistics", "statistics_yesterday", "statistics_week", "statistics_month", "statistics_year"]
-    names = ["Statistics", "Statistics Yesterday", "Statistics Week", "Statistics Month", "Statistics Year"]
+    """Create daily, weekly, monthly, yearly and statistics sensors."""
+    keys = ["statistics", "yesterday", "week", "month", "year"]
+    names = ["Statistics", "Yesterday", "Week", "Month", "Year"]
 
     return tuple(
         WattsOnSensorDescription(

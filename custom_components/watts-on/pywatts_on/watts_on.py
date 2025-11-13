@@ -9,6 +9,7 @@ import re
 import requests
 import time
 import logging
+from collections import defaultdict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,12 +31,12 @@ CONFIRMED_URL = f"{BASE_B2C}/api/CombinedSigninAndSignup/confirmed"
 class WattsOnApi:
     """Watts On API client with token persistence support."""
 
-    def __init__(self, username: str, password: str, tokens: dict | None = None, water_device_id: int | None = None, heating_device_id: int | None = None):
+    def __init__(self, username: str, password: str, tokens: dict | None = None):
         self.username = username
         self.password = password
+        self.water_device_id: str | None = None
+        self.heating_device_id: str | None = None
         self.tokens: dict | None = tokens
-        self.water_device_id = water_device_id
-        self.heating_device_id = heating_device_id
         self.session = requests.Session()
 
     def _is_token_valid(self) -> bool:
@@ -159,7 +160,7 @@ class WattsOnApi:
 
         return tok.json()
     
-    def extract_statistics(self, data):
+    def extract_summations(self, data):
         now = datetime.now(timezone.utc)
         day_start = datetime(now.year, now.month, now.day, tzinfo=timezone.utc)
         yesterday_start = day_start - timedelta(days=1)
@@ -202,12 +203,81 @@ class WattsOnApi:
                 continue
 
         return {
-            "statistics_week": week_total,
-            "statistics_month": month_total,
-            "statistics_year": ytd_total,
-            "statistics_yesterday": yesterday_total,
-            "statistics": 0.0
+            "week": week_total,
+            "month": month_total,
+            "year": ytd_total,
+            "yesterday": yesterday_total,
         }
+    
+    def build_timeseries(self, data, interval: str = "daily"):
+        """
+        Build time-series statistics.
+
+        Args:
+            data: Raw list of readings from API.
+            interval: Aggregation period: 'hourly', 'daily', 'weekly', 'monthly', 'raw'.
+
+        Returns:
+            A list of dictionaries: [{"datetime": ISO8601, "value": float}, ...]
+        """
+        # Prepare accumulator
+        grouped = defaultdict(float)
+
+        for d in data:
+            ts = d.get("sd") or d.get("SD")
+            val = d.get("vol") or d.get("En")
+            if ts is None or val is None:
+                continue
+
+            try:
+                if isinstance(ts, str):
+                    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                else:
+                    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+                fval = float(val)
+            except Exception:
+                continue
+
+            if interval == "hourly":
+                key = dt.replace(minute=0, second=0, microsecond=0)
+            elif interval == "daily":
+                key = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+            elif interval == "weekly":
+                key = dt - timedelta(days=dt.weekday())
+                key = key.replace(hour=0, minute=0, second=0, microsecond=0)
+            elif interval == "monthly":
+                key = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            else:
+                key = dt
+
+            grouped[key] += fval
+
+        stats = [
+            {"datetime": k.isoformat(), "value": round(v, 3)}
+            for k, v in sorted(grouped.items())
+        ]
+
+        return stats
+
+    
+    def fetch_devices(self):
+        url = "https://p.watts-energy.dk/provisioning/api/v1/locations"
+        headers = {"Authorization": f"Bearer {self.tokens['access_token']}"}
+        try:
+            json_response = requests.get(url, headers=headers, timeout=30).json()
+            devices = json_response[0]["devices"]
+            heating_devices = [d for d in devices if "heating" in d["utilityType"].lower()]
+            if len(heating_devices) > 0:
+                self.heating_device_id = heating_devices[0]["deviceId"]
+            else:
+                self.heating_device_id = ""
+            water_devices = [d for d in devices if "water" in d["utilityType"].lower()]
+            if len(water_devices) > 0:
+                self.water_device_id = water_devices[0]["deviceId"]
+            else:
+                self.water_device_id = ""
+        except Exception as e:
+            return
 
     def fetch_water(self, token: str):
         """Fetch water data from API."""
@@ -241,7 +311,16 @@ class WattsOnApi:
         raw_heating = self.fetch_heating(token)
         raw_water = self.fetch_water(token)
 
+        heating_data = raw_heating if isinstance(raw_heating, list) else raw_heating.get("data", [])
+        water_data = raw_water if isinstance(raw_water, list) else raw_water.get("data", [])
+
         return {
-            "water": self.extract_statistics(raw_water if isinstance(raw_water, list) else raw_water.get("data", [])),
-            "heating": self.extract_statistics(raw_heating if isinstance(raw_heating, list) else raw_heating.get("data", []))
+            "water": {
+                **self.extract_summations(water_data),
+                "statistics": self.build_timeseries(water_data, "daily"),
+            },
+            "heating": {
+                **self.extract_summations(heating_data),
+                "statistics": self.build_timeseries(heating_data, "daily"),
+            },
         }

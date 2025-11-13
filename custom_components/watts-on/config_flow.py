@@ -37,8 +37,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 vol.Required("username"): str,
                 vol.Required("password"): str,
-                vol.Optional("water_device_id"): str,
-                vol.Optional("heating_device_id"): str,
             }
         )
 
