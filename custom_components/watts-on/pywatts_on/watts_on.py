@@ -203,10 +203,10 @@ class WattsOnApi:
                 continue
 
         return {
-            "statistics_week": week_total,
-            "statistics_month": month_total,
-            "statistics_year": ytd_total,
-            "statistics_yesterday": yesterday_total,
+            "week": week_total,
+            "month": month_total,
+            "year": ytd_total,
+            "yesterday": yesterday_total,
         }
     
     def build_timeseries(self, data, interval: str = "daily"):
