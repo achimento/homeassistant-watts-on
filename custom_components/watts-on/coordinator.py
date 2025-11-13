@@ -39,7 +39,6 @@ class WattsOnUpdateCoordinator(DataUpdateCoordinator):
         try:
             # Fetch whatever main payload your integration needs
             data = await self.hass.async_add_executor_job(self.api.fetch_data)
-            _LOGGER.error("Watts On data: %s", data)
 
             # Check if tokens changed (refreshed / re-logged in)
             stored_tokens = self.entry.data.get("tokens")
