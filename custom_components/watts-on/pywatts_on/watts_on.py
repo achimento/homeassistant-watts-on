@@ -211,10 +211,23 @@ class WattsOnApi:
 
                 grouped[key] += fval
 
-        stats = [
-            {"datetime": k.isoformat(), "value": round(v, 3)}
-            for k, v in sorted(grouped.items())
-        ]
+        stats = []
+        if interval == "raw":
+            stats = [
+                {
+                    "datetime": k.isoformat(),
+                    "value": round(v, 3),
+                }
+                for k, v in sorted(grouped.items())
+            ]
+        else:
+            stats = [
+                {
+                    "date": k.strftime("%Y-%m-%d"),
+                    "value": round(v, 3),
+                }
+                for k, v in sorted(grouped.items())
+            ]
 
         return stats
 
