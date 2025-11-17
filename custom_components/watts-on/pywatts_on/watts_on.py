@@ -213,21 +213,23 @@ class WattsOnApi:
 
         stats = []
         if interval == "raw":
-            stats = [
-                {
+            for k, v in sorted(grouped.items()):
+                obj = {
                     "datetime": k.isoformat(),
                     "value": round(v, 3),
                 }
-                for k, v in sorted(grouped.items())
-            ]
+                stats.append(obj)
         else:
-            stats = [
-                {
+            for k, v in sorted(grouped.items()):
+                obj = {
                     "date": k.strftime("%Y-%m-%d"),
                     "value": round(v, 3),
                 }
-                for k, v in sorted(grouped.items())
-            ]
+                if interval == "monthly":
+                    obj.month = k.strftime("%B")
+                if interval == "yearly":
+                    obj.year = k.strftime("%Y")
+                stats.append(obj)
 
         return stats
 
