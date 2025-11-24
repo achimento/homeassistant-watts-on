@@ -226,9 +226,9 @@ class WattsOnApi:
                     "value": round(v, 3),
                 }
                 if interval == "monthly":
-                    obj.month = k.strftime("%B")
+                    obj["month"] = k.strftime("%B")
                 if interval == "yearly":
-                    obj.year = k.strftime("%Y")
+                    obj["year"] = k.strftime("%Y")
                 stats.append(obj)
 
         return stats
